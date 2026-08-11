@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payment-service
+  labels:
+    name: payment-service
+    environment: local
+
