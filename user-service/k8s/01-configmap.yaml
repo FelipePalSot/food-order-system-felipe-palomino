@@ -1,0 +1,19 @@
+# ============================================
+# CONFIGMAP - Configuración NO sensible
+# ============================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+  namespace: user-service
+  labels:
+    app: user-service
+data:
+  DB_URL: "jdbc:postgresql://host.docker.internal:5434/userdb"
+  DDL_AUTO: "validate"
+  SHOW_SQL: "false"
+  POOL_SIZE: "10"
+  LOG_LEVEL: "INFO"
+  SQL_LOG_LEVEL: "WARN"
+  JAVA_OPTS: "-Xmx512m -Xms256m"
+

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+  namespace: catalog-service
+  labels:
+    app: catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-service
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+    spec:
+      containers:
+        - name: catalog-service
+          image: catalog-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+              name: http
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: catalog-service-config
+                  key: DB_URL
+            - name: DDL_AUTO
+              valueFrom:
+                configMapKeyRef:
+                  name: catalog-service-config
+                  key: DDL_AUTO
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: catalog-service-config
+                  key: LOG_LEVEL
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  name: catalog-service-config
+                  key: JAVA_OPTS
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-service-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: catalog-service-secret
+                  key: DB_PASSWORD
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8082
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+

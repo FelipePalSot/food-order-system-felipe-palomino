@@ -1,0 +1,11 @@
+package com.felipepalomino.foodorder.user.domain.exception;
+
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(Long id) {
+        super("Usuario no encontrado con id: " + id);
+    }
+    public UserNotFoundException(String email) {
+        super("Usuario no encontrado con email: " + email);
+    }
+}
+

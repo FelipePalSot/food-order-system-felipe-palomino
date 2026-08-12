@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: delivery-service-config
+  namespace: delivery-service
+  labels:
+    app: delivery-service
+data:
+  DB_URL: "jdbc:postgresql://host.docker.internal:5436/deliverydb"
+  ORDER_SERVICE_URL: "http://order-service.order-service.svc.cluster.local"
+  DDL_AUTO: "validate"
+  SHOW_SQL: "false"
+  POOL_SIZE: "10"
+  LOG_LEVEL: "INFO"
+  JAVA_OPTS: "-Xmx512m -Xms256m"
+

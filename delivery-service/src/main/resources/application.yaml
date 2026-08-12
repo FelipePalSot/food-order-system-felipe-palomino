@@ -1,12 +1,12 @@
 server:
-  port: 8085
+  port: 8084
 
 spring:
   application:
-    name: payment-service
+    name: delivery-service
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5437/paymentdb}
+    url: ${DB_URL:jdbc:postgresql://localhost:5436/deliverydb}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -49,5 +49,5 @@ management:
 
 logging:
   level:
-    com.felipepalomino.foodorder.payment: ${LOG_LEVEL:INFO}
+    com.felipepalomino.foodorder.delivery: ${LOG_LEVEL:INFO}
 

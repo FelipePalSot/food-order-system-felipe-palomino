@@ -1,12 +1,12 @@
 server:
-  port: 8085
+  port: 8082
 
 spring:
   application:
-    name: payment-service
+    name: catalog-service
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5437/paymentdb}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/catalogdb}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -19,6 +19,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
     hibernate:
       ddl-auto: ${DDL_AUTO:validate}
     show-sql: ${SHOW_SQL:false}
@@ -27,10 +28,6 @@ spring:
     enabled: false
     locations: classpath:db/migration
     baseline-on-migrate: true
-
-order:
-  service:
-    url: ${ORDER_SERVICE_URL:http://localhost:8083}
 
 management:
   endpoints:
@@ -49,5 +46,6 @@ management:
 
 logging:
   level:
-    com.felipepalomino.foodorder.payment: ${LOG_LEVEL:INFO}
+    com.felipepalomino.foodorder.catalog: ${LOG_LEVEL:INFO}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
 

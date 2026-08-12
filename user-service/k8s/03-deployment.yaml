@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: user-service
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+              name: http
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: DB_URL
+            - name: DDL_AUTO
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: DDL_AUTO
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: LOG_LEVEL
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: JAVA_OPTS
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secret
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secret
+                  key: DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secret
+                  key: JWT_SECRET
+          # Health checks para Kubernetes
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+

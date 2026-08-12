@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-service-config
+  namespace: order-service
+  labels:
+    app: order-service
+data:
+  DB_URL: "jdbc:postgresql://host.docker.internal:5435/orderdb"
+  # DNS interno K8s para comunicarse con otros servicios
+  CATALOG_SERVICE_URL: "http://catalog-service.catalog-service.svc.cluster.local"
+  USER_SERVICE_URL: "http://user-service.user-service.svc.cluster.local"
+  DDL_AUTO: "validate"
+  SHOW_SQL: "false"
+  POOL_SIZE: "10"
+  LOG_LEVEL: "INFO"
+  SQL_LOG_LEVEL: "WARN"
+  JAVA_OPTS: "-Xmx512m -Xms256m"
+
