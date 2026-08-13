@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Food Order System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>🍕 Food Order System</h1>
+            <div class="nav-right">
+                <span id="user-name">Usuario</span>
+                <a href="#" id="cart-link" class="cart-badge">🛒 Carrito (<span id="cart-count">0</span>)</a>
+                <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Restaurantes Disponibles</h2>
+
+        <div id="loading" class="loading">Cargando restaurantes...</div>
+        <div id="error-message" class="error hidden"></div>
+
+        <div id="restaurants-container" class="restaurants-grid"></div>
+
+        <!-- Modal del Carrito -->
+        <div id="cart-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>🛒 Tu Carrito</h2>
+                <div id="cart-items"></div>
+                <div class="cart-total">
+                    <h3>Total: $<span id="total-amount">0.00</span></h3>
+                </div>
+                <button id="checkout-btn" class="btn btn-primary">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>
+

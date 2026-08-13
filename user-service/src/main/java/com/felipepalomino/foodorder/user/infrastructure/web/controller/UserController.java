@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 /**
  * INFRAESTRUCTURA - Web: Expone la API REST del User Service.
  */
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -50,7 +51,7 @@ public class UserController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtTokenProvider.generateToken(userDetails);
         User user = userService.getUserByEmail(request.getEmail());
-        return ResponseEntity.ok(new LoginResponse(token, user.getEmail(), user.getRole().name()));
+        return ResponseEntity.ok(new LoginResponse(token, user.getId(), user.getName(), user.getEmail(), user.getRole().name()));
     }
 
     // ============================================================

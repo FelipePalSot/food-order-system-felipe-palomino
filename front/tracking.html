@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento - Food Order System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>🍕 Food Order System</h1>
+            <div class="nav-right">
+                <a href="catalog.html" class="btn btn-secondary">← Volver al Catálogo</a>
+                <button id="logout-btn" class="btn btn-secondary">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>📦 Seguimiento de Pedido</h2>
+
+        <div id="error-message" class="error hidden"></div>
+
+        <div class="tracking-container">
+            <div class="tracking-card">
+                <h3>Información del Pedido</h3>
+                <div id="order-info">
+                    <p><strong>Pedido #:</strong> <span id="order-id">-</span></p>
+                    <p><strong>Total:</strong> $<span id="order-amount">-</span></p>
+                    <p><strong>Dirección:</strong> <span id="delivery-address">-</span></p>
+                </div>
+            </div>
+
+            <div class="tracking-card">
+                <h3>Estado del Pedido</h3>
+                <div id="order-status" class="status-timeline">
+                    <div class="status-step" data-status="PENDING">
+                        <div class="status-icon">⏳</div>
+                        <div class="status-label">Pendiente</div>
+                    </div>
+                    <div class="status-step" data-status="CONFIRMED">
+                        <div class="status-icon">✅</div>
+                        <div class="status-label">Confirmado</div>
+                    </div>
+                    <div class="status-step" data-status="PREPARING">
+                        <div class="status-icon">👨‍🍳</div>
+                        <div class="status-label">Preparando</div>
+                    </div>
+                    <div class="status-step" data-status="READY">
+                        <div class="status-icon">🍱</div>
+                        <div class="status-label">Listo</div>
+                    </div>
+                    <div class="status-step" data-status="DELIVERED">
+                        <div class="status-icon">🚚</div>
+                        <div class="status-label">Entregado</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tracking-card">
+                <h3>Estado del Pago</h3>
+                <div id="payment-info">
+                    <p><strong>Método:</strong> <span id="payment-method">-</span></p>
+                    <p><strong>Estado:</strong> <span id="payment-status" class="badge">-</span></p>
+                    <p><strong>Referencia:</strong> <span id="transaction-ref">-</span></p>
+                </div>
+            </div>
+
+            <div class="tracking-card">
+                <h3>Estado de Entrega</h3>
+                <div id="delivery-info">
+                    <p><strong>Estado:</strong> <span id="delivery-status" class="badge">-</span></p>
+                    <p><strong>Tiempo estimado:</strong> <span id="estimated-minutes">-</span> minutos</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="refresh-btn" class="btn btn-primary">🔄 Actualizar Estado</button>
+            <a href="catalog.html" class="btn btn-secondary">Realizar Nuevo Pedido</a>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/tracking.js"></script>
+</body>
+</html>
+

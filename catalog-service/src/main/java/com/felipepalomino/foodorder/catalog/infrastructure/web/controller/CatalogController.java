@@ -19,6 +19,7 @@ import java.util.Map;
  * GET  /api/restaurants/{id}/menu → menú del restaurante
  * GET  /api/menu-items/{id}       → obtener item de menú
  */
+@CrossOrigin(origins = "*")
 @RestController
 public class CatalogController {
 

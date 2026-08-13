@@ -6,6 +6,7 @@ import com.felipepalomino.foodorder.order.domain.model.OrderItem;
 import com.felipepalomino.foodorder.order.domain.model.OrderStatus;
 import com.felipepalomino.foodorder.order.domain.repository.OrderRepository;
 import com.felipepalomino.foodorder.order.infrastructure.client.CatalogServiceClient;
+import com.felipepalomino.foodorder.order.infrastructure.messaging.OrderEventProducer;
 import com.felipepalomino.foodorder.order.infrastructure.web.dto.CreateOrderRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,27 +23,30 @@ public class OrderApplicationService {
 
     private final OrderRepository orderRepository;
     private final CatalogServiceClient catalogClient;
+    private final OrderEventProducer eventProducer;
 
     public OrderApplicationService(OrderRepository orderRepository,
-                                   CatalogServiceClient catalogClient) {
+                                   CatalogServiceClient catalogClient,
+                                   OrderEventProducer eventProducer) {
         this.orderRepository = orderRepository;
-        this.catalogClient = catalogClient;
+        this.catalogClient   = catalogClient;
+        this.eventProducer   = eventProducer;
     }
 
     // ============================================================
-    // CASO DE USO: Crear pedido
-    // Consulta el catalog-service para obtener precios y nombres
+    // CASO DE USO: Crear pedido + publicar evento Kafka
     // ============================================================
     public Order createOrder(CreateOrderRequest request) {
         List<OrderItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
         for (CreateOrderRequest.ItemRequest itemReq : request.getItems()) {
+            // Circuit Breaker activo aquí: si catalog-service cae → fallback
             Map<String, Object> menuItem = catalogClient.getMenuItemById(itemReq.getMenuItemId());
 
-            String name = (String) menuItem.get("name");
+            String name       = (String) menuItem.get("name");
             BigDecimal unitPrice = new BigDecimal(menuItem.get("price").toString());
-            BigDecimal subtotal = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
+            BigDecimal subtotal  = unitPrice.multiply(BigDecimal.valueOf(itemReq.getQuantity()));
 
             OrderItem item = new OrderItem();
             item.setMenuItemId(itemReq.getMenuItemId());
@@ -64,7 +68,17 @@ public class OrderApplicationService {
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+
+        // 📤 Publicar evento Kafka → payment-service escuchará esto
+        eventProducer.publishOrderCreated(
+                saved.getId(),
+                saved.getUserId(),
+                saved.getTotalAmount().doubleValue(),
+                saved.getDeliveryAddress()
+        );
+
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -87,7 +101,18 @@ public class OrderApplicationService {
         Order order = getOrderById(id);
         order.setStatus(OrderStatus.valueOf(newStatus.toUpperCase()));
         order.setUpdatedAt(LocalDateTime.now());
-        return orderRepository.save(order);
+        Order updated = orderRepository.save(order);
+
+        // Si el pedido se confirma → publicar evento para delivery-service
+        if (OrderStatus.CONFIRMED.name().equalsIgnoreCase(newStatus)) {
+            eventProducer.publishOrderConfirmed(
+                    updated.getId(),
+                    updated.getUserId(),
+                    updated.getDeliveryAddress()
+            );
+        }
+
+        return updated;
     }
 
     public void cancelOrder(Long id) {
@@ -97,4 +122,3 @@ public class OrderApplicationService {
         orderRepository.save(order);
     }
 }
-

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: food-order
+  labels:
+    app: food-order-system
+    environment: production
+
