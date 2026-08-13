@@ -29,6 +29,9 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
     public Optional<Delivery> findByOrderId(Long orderId) { return jpa.findByOrderId(orderId).map(this::toDomain); }
 
     @Override
+    public boolean existsByOrderId(Long orderId) { return jpa.existsByOrderId(orderId); }
+
+    @Override
     public List<Delivery> findAll() { return jpa.findAll().stream().map(this::toDomain).collect(Collectors.toList()); }
 
     @Override

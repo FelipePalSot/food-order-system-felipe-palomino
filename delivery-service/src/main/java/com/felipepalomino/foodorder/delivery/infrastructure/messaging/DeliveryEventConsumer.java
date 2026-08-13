@@ -32,6 +32,12 @@ public class DeliveryEventConsumer {
         Long userId          = Long.valueOf(event.get("userId").toString());
         String address       = (String) event.get("deliveryAddress");
 
+        // Evitar duplicados: si ya existe entrega para este pedido, ignorar
+        if (deliveryService.existsByOrderId(orderId)) {
+            System.out.println("⚠️ Ya existe entrega para orderId=" + orderId + ", ignorando evento duplicado.");
+            return;
+        }
+
         // Crear entrega con 30 minutos estimados por defecto
         deliveryService.createDelivery(orderId, userId, address, 30);
         System.out.println("✅ Entrega asignada vía Kafka para orderId=" + orderId);

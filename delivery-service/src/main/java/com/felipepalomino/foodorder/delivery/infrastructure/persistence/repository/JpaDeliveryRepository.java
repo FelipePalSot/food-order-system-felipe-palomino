@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface JpaDeliveryRepository extends JpaRepository<DeliveryEntity, Long> {
     Optional<DeliveryEntity> findByOrderId(Long orderId);
+    boolean existsByOrderId(Long orderId);
 }
 

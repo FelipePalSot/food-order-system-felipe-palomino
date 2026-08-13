@@ -9,6 +9,7 @@ public interface DeliveryRepository {
     Delivery save(Delivery delivery);
     Optional<Delivery> findById(Long id);
     Optional<Delivery> findByOrderId(Long orderId);
+    boolean existsByOrderId(Long orderId);
     List<Delivery> findAll();
     void deleteById(Long id);
 }

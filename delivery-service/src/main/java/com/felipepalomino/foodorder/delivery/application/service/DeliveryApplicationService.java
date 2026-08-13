@@ -49,6 +49,11 @@ public class DeliveryApplicationService {
         return deliveryRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public boolean existsByOrderId(Long orderId) {
+        return deliveryRepository.existsByOrderId(orderId);
+    }
+
     public Delivery updateStatus(Long id, String newStatus) {
         Delivery d = getDeliveryById(id);
         d.setStatus(DeliveryStatus.valueOf(newStatus.toUpperCase()));

@@ -100,7 +100,12 @@ function renderRestaurants() {
     const container = document.getElementById('restaurants-container');
     container.innerHTML = '';
 
-    restaurants.forEach(restaurant => {
+    // Filtrar restaurantes que tengan al menos un item disponible
+    const restaurantsWithItems = restaurants.filter(restaurant =>
+        menuItems.some(item => item.restaurantId === restaurant.id && item.available)
+    );
+
+    restaurantsWithItems.forEach(restaurant => {
         const restaurantCard = createRestaurantCard(restaurant);
         container.appendChild(restaurantCard);
     });
