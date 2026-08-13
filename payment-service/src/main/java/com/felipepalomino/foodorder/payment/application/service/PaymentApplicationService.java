@@ -69,5 +69,11 @@ public class PaymentApplicationService {
         p.setTransactionRef("TXN-CASH-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         return paymentRepository.save(p);
     }
-}
 
+    // Cambiar a cualquier estado (útil para demo/clase)
+    public Payment updateStatus(Long id, String newStatus) {
+        Payment p = getPaymentById(id);
+        p.setStatus(PaymentStatus.valueOf(newStatus.toUpperCase()));
+        return paymentRepository.save(p);
+    }
+}

@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguimiento - Food Order System</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .status-buttons { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; justify-content:center; }
+        .btn-st { border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px; transition: all .2s; }
+        .btn-st:hover { opacity:.8; transform:scale(1.03); }
+        .btn-st.active-state { outline:4px solid #333; transform:scale(1.07); }
+        /* Colores pedido */
+        .c-pending   { background:#ffc107; color:#000; }
+        .c-confirmed { background:#28a745; color:#fff; }
+        .c-shipped   { background:#667eea; color:#fff; }
+        /* Colores pago */
+        .c-pay-pending   { background:#ffc107; color:#000; }
+        .c-pay-completed { background:#28a745; color:#fff; }
+        .c-pay-failed    { background:#dc3545; color:#fff; }
+        /* Colores entrega */
+        .c-del-pending   { background:#ffc107; color:#000; }
+        .c-del-assigned  { background:#17a2b8; color:#fff; }
+        .c-del-transit   { background:#667eea; color:#fff; }
+        .c-del-delivered { background:#28a745; color:#fff; }
+
+        .status-flow  { display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:12px; font-size:13px; }
+        .arrow { color:#aaa; font-size:16px; }
+        .current-big { text-align:center; margin:8px 0; }
+        .current-big span { font-size:22px; font-weight:bold; letter-spacing:1px; }
+        .section-hint { text-align:center; font-size:11px; color:#aaa; margin-top:6px; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -21,58 +46,82 @@
         <h2>📦 Seguimiento de Pedido</h2>
 
         <div id="error-message" class="error hidden"></div>
+        <div id="success-message" class="success hidden"></div>
 
         <div class="tracking-container">
+
+            <!-- Info del pedido -->
             <div class="tracking-card">
                 <h3>Información del Pedido</h3>
-                <div id="order-info">
-                    <p><strong>Pedido #:</strong> <span id="order-id">-</span></p>
-                    <p><strong>Total:</strong> $<span id="order-amount">-</span></p>
-                    <p><strong>Dirección:</strong> <span id="delivery-address">-</span></p>
-                </div>
+                <p><strong>Pedido #:</strong> <span id="order-id">-</span></p>
+                <p><strong>Total:</strong> $<span id="order-amount">-</span></p>
+                <p><strong>Dirección:</strong> <span id="delivery-address">-</span></p>
             </div>
 
+            <!-- Estado del PEDIDO -->
             <div class="tracking-card">
                 <h3>Estado del Pedido</h3>
-                <div id="order-status" class="status-timeline">
-                    <div class="status-step" data-status="PENDING">
-                        <div class="status-icon">⏳</div>
-                        <div class="status-label">Pendiente</div>
-                    </div>
-                    <div class="status-step" data-status="CONFIRMED">
-                        <div class="status-icon">✅</div>
-                        <div class="status-label">Confirmado</div>
-                    </div>
-                    <div class="status-step" data-status="PREPARING">
-                        <div class="status-icon">👨‍🍳</div>
-                        <div class="status-label">Preparando</div>
-                    </div>
-                    <div class="status-step" data-status="READY">
-                        <div class="status-icon">🍱</div>
-                        <div class="status-label">Listo</div>
-                    </div>
-                    <div class="status-step" data-status="DELIVERED">
-                        <div class="status-icon">🚚</div>
-                        <div class="status-label">Entregado</div>
-                    </div>
+                <div class="status-flow">
+                    <span style="color:#856404;font-weight:bold;">⏳ PENDING</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#155724;font-weight:bold;">✅ CONFIRMED</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#3b4fd9;font-weight:bold;">🚚 SHIPPED</span>
                 </div>
+                <div class="current-big">
+                    Estado actual:<br>
+                    <span id="current-order-status">-</span>
+                </div>
+                <div class="status-buttons">
+                    <button id="btn-pending"   class="btn-st c-pending"   onclick="changeOrderStatus('PENDING')">⏳ Pendiente</button>
+                    <button id="btn-confirmed" class="btn-st c-confirmed" onclick="changeOrderStatus('CONFIRMED')">✅ Confirmar</button>
+                    <button id="btn-shipped"   class="btn-st c-shipped"   onclick="changeOrderStatus('SHIPPED')">🚚 Enviar</button>
+                </div>
+                <p class="section-hint">Haz click para cambiar el estado del pedido</p>
             </div>
 
+            <!-- Estado del PAGO -->
             <div class="tracking-card">
                 <h3>Estado del Pago</h3>
-                <div id="payment-info">
-                    <p><strong>Método:</strong> <span id="payment-method">-</span></p>
-                    <p><strong>Estado:</strong> <span id="payment-status" class="badge">-</span></p>
-                    <p><strong>Referencia:</strong> <span id="transaction-ref">-</span></p>
+                <div class="status-flow">
+                    <span style="color:#856404;font-weight:bold;">⏳ PENDING</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#155724;font-weight:bold;">✅ COMPLETED</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#dc3545;font-weight:bold;">❌ FAILED</span>
                 </div>
+                <p><strong>Método:</strong> <span id="payment-method">-</span></p>
+                <p><strong>Estado:</strong> <span id="payment-status" class="badge">-</span></p>
+                <p><strong>Referencia:</strong> <span id="transaction-ref">-</span></p>
+                <div class="status-buttons">
+                    <button id="btn-pay-pending"   class="btn-st c-pay-pending"   onclick="changePaymentStatus('PENDING')">⏳ Pendiente</button>
+                    <button id="btn-pay-completed" class="btn-st c-pay-completed" onclick="changePaymentStatus('COMPLETED')">✅ Completado</button>
+                    <button id="btn-pay-failed"    class="btn-st c-pay-failed"    onclick="changePaymentStatus('FAILED')">❌ Fallido</button>
+                </div>
+                <p class="section-hint">Haz click para cambiar el estado del pago</p>
             </div>
 
+            <!-- Estado de ENTREGA -->
             <div class="tracking-card">
                 <h3>Estado de Entrega</h3>
-                <div id="delivery-info">
-                    <p><strong>Estado:</strong> <span id="delivery-status" class="badge">-</span></p>
-                    <p><strong>Tiempo estimado:</strong> <span id="estimated-minutes">-</span> minutos</p>
+                <div class="status-flow">
+                    <span style="color:#856404;font-weight:bold;">📋 PENDING</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#0c5460;font-weight:bold;">📌 ASSIGNED</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#3b4fd9;font-weight:bold;">🛵 IN_TRANSIT</span>
+                    <span class="arrow">→</span>
+                    <span style="color:#155724;font-weight:bold;">✅ DELIVERED</span>
                 </div>
+                <p><strong>Estado:</strong> <span id="delivery-status" class="badge">-</span></p>
+                <p><strong>Tiempo estimado:</strong> <span id="estimated-minutes">-</span> minutos</p>
+                <div class="status-buttons">
+                    <button id="btn-del-pending"   class="btn-st c-del-pending"   onclick="changeDeliveryStatus('PENDING')">📋 Pendiente</button>
+                    <button id="btn-del-assigned"  class="btn-st c-del-assigned"  onclick="changeDeliveryStatus('ASSIGNED')">📌 Asignado</button>
+                    <button id="btn-del-transit"   class="btn-st c-del-transit"   onclick="changeDeliveryStatus('IN_TRANSIT')">🛵 En camino</button>
+                    <button id="btn-del-delivered" class="btn-st c-del-delivered" onclick="changeDeliveryStatus('DELIVERED')">✅ Entregado</button>
+                </div>
+                <p class="section-hint">Haz click para cambiar el estado de la entrega</p>
             </div>
         </div>
 
@@ -87,4 +136,3 @@
     <script src="js/tracking.js"></script>
 </body>
 </html>
-

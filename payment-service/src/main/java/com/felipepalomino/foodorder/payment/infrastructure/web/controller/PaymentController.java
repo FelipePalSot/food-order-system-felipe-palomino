@@ -51,5 +51,11 @@ public class PaymentController {
     public ResponseEntity<Payment> confirm(@PathVariable Long id) {
         return ResponseEntity.ok(paymentService.confirmPayment(id));
     }
-}
 
+    // Cambiar estado libremente (para demo/clase)
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Payment> updateStatus(@PathVariable Long id,
+                                                @RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(paymentService.updateStatus(id, body.get("status")));
+    }
+}

@@ -12,9 +12,8 @@ CREATE TABLE orders (
     created_at       TIMESTAMP      DEFAULT NOW(),
     updated_at       TIMESTAMP      DEFAULT NOW(),
 
-    -- Validación: solo permite estados definidos en OrderStatus.java
     CONSTRAINT chk_order_status CHECK (
-        status IN ('PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED')
+        status IN ('PENDING', 'CONFIRMED', 'SHIPPED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED')
     )
 );
 
@@ -33,4 +32,3 @@ CREATE INDEX idx_orders_user_id ON orders (user_id);
 CREATE INDEX idx_orders_restaurant_id ON orders (restaurant_id);
 CREATE INDEX idx_orders_status ON orders (status);
 CREATE INDEX idx_order_items_order_id ON order_items (order_id);
-
